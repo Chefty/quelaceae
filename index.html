@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2e7d32" />
+    <meta
+      name="description"
+      content="Apprends les familles botaniques des fruits et legumes. Jeu de revision pour la formation maraichere, hors ligne, sans compte."
+    />
+
+    <title>Familles Maraîchage</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!--
+      L'application tient dans une seule page.
+      On affiche un seul "ecran" a la fois en basculant la classe .actif.
+      Ecrans : #ecran-accueil, #ecran-jeu, #ecran-fin.
+    -->
+    <main id="app">
+      <!-- ============================= ACCUEIL ============================= -->
+      <section id="ecran-accueil" class="ecran actif" aria-labelledby="titre-accueil">
+        <div class="accueil-contenu">
+          <p class="accueil-kicker">Formation maraîchère</p>
+          <h1 id="titre-accueil" class="accueil-titre text-balance">Familles Maraîchage</h1>
+          <p class="accueil-texte text-pretty">
+            Reconnais la famille botanique de chaque légume. Sessions courtes, hors ligne, sans
+            compte. Les cartes ratées reviennent plus souvent.
+          </p>
+
+          <div class="accueil-actions">
+            <button id="btn-jouer" class="btn btn-primaire" type="button">Jouer</button>
+            <button id="btn-reviser-accueil" class="btn btn-secondaire" type="button" hidden>
+              Réviser mes erreurs (<span id="compte-erreurs">0</span>)
+            </button>
+          </div>
+
+          <p id="accueil-reprise" class="accueil-note" hidden></p>
+        </div>
+      </section>
+
+      <!-- =============================== JEU =============================== -->
+      <section id="ecran-jeu" class="ecran" aria-labelledby="titre-jeu">
+        <h2 id="titre-jeu" class="sr-only">Partie en cours</h2>
+
+        <header class="jeu-header">
+          <div class="progression" aria-hidden="true">
+            <div id="progression-barre" class="progression-barre"></div>
+          </div>
+          <div class="jeu-compteurs">
+            <span id="jeu-progression" class="jeu-progression" aria-live="polite">1 / 12</span>
+            <span id="jeu-streak" class="jeu-streak" title="Série de bonnes réponses">
+              <span class="streak-icone" aria-hidden="true">▲</span>
+              <span id="streak-valeur">0</span>
+            </span>
+          </div>
+        </header>
+
+        <div class="carte">
+          <div class="carte-photo-cadre">
+            <img id="carte-photo" class="carte-photo" src="" alt="" width="800" height="600" />
+          </div>
+          <p id="carte-nom" class="carte-nom text-balance">—</p>
+        </div>
+
+        <!-- Zone de feedback (bonne / mauvaise reponse), lue par les lecteurs d'ecran. -->
+        <p id="feedback" class="feedback" role="status" aria-live="assertive"></p>
+
+        <!-- Les boutons de familles sont generes dynamiquement par app.js. -->
+        <div id="familles-boutons" class="familles-boutons"></div>
+      </section>
+
+      <!-- =============================== FIN =============================== -->
+      <section id="ecran-fin" class="ecran" aria-labelledby="titre-fin">
+        <div class="fin-contenu">
+          <h2 id="titre-fin" class="fin-titre">Session terminée</h2>
+
+          <div class="fin-score">
+            <span id="fin-score-valeur" class="fin-score-valeur">0 / 0</span>
+            <span class="fin-score-label">bonnes réponses</span>
+          </div>
+
+          <div id="fin-familles" class="fin-bloc">
+            <h3 class="fin-bloc-titre">Score par famille</h3>
+            <ul id="fin-familles-liste" class="fin-liste"></ul>
+          </div>
+
+          <div id="fin-erreurs" class="fin-bloc" hidden>
+            <h3 class="fin-bloc-titre">Familles à revoir</h3>
+            <ul id="fin-erreurs-liste" class="fin-liste"></ul>
+          </div>
+
+          <p id="fin-parfait" class="fin-parfait" hidden>Sans faute. Bravo&nbsp;!</p>
+
+          <div class="fin-actions">
+            <button id="btn-rejouer" class="btn btn-primaire" type="button">Rejouer</button>
+            <button id="btn-reviser-fin" class="btn btn-secondaire" type="button" hidden>
+              Réviser les erreurs
+            </button>
+            <button id="btn-accueil" class="btn btn-lien" type="button">Retour à l'accueil</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

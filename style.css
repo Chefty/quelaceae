@@ -1,0 +1,426 @@
+/* =========================================================================
+   Familles Maraîchage — feuille de style
+   Mobile-first, portrait, gros boutons, contraste eleve (lisible en plein soleil).
+   Palette et regles issues du cahier des charges.
+   ========================================================================= */
+
+/* ---- Variables de couleurs et tailles ---------------------------------- */
+:root {
+  --fond: #f5f2ea; /* creme, evoque le papier / la terre */
+  --texte: #1a1a1a; /* quasi noir */
+  --texte-doux: #5a5751; /* gris chaud pour les textes secondaires */
+  --correct: #2e7d32; /* vert bonne reponse */
+  --erreur: #c62828; /* rouge mauvaise reponse */
+  --blanc: #ffffff;
+  --bordure: #cfc9ba; /* gris chaud pour les bordures de boutons */
+
+  --rayon: 14px;
+  --hauteur-bouton: 60px; /* > 56px demande pour le tap */
+  --largeur-max: 560px; /* confort sur tablette / desktop */
+}
+
+/* ---- Reinitialisation legere ------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--fond);
+  /* Empeche le zoom involontaire sur double-tap iOS tout en gardant l'accessibilite. */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--texte);
+  background-color: var(--fond);
+  line-height: 1.5;
+  /* Prise en compte des encoches (notch) en mode plein ecran / installe. */
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+/* Utilitaire lecteur d'ecran uniquement. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* ---- Structure des ecrans ---------------------------------------------- */
+#app {
+  max-width: var(--largeur-max);
+  margin-inline: auto;
+  min-height: 100dvh;
+}
+
+.ecran {
+  display: none;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 20px 16px 24px;
+}
+
+.ecran.actif {
+  display: flex;
+}
+
+/* ---- Boutons generiques ------------------------------------------------ */
+.btn {
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  min-height: var(--hauteur-bouton);
+  padding: 0 20px;
+  border-radius: var(--rayon);
+  border: 2px solid transparent;
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.05s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primaire {
+  background-color: var(--correct);
+  color: var(--blanc);
+}
+
+.btn-secondaire {
+  background-color: var(--blanc);
+  color: var(--texte);
+  border-color: var(--bordure);
+}
+
+.btn-lien {
+  background: none;
+  color: var(--texte-doux);
+  min-height: 44px;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+/* ============================ ACCUEIL ==================================== */
+#ecran-accueil {
+  justify-content: center;
+}
+
+.accueil-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: center;
+  padding-block: 24px;
+}
+
+.accueil-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--correct);
+}
+
+.accueil-titre {
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.accueil-texte {
+  font-size: 17px;
+  color: var(--texte-doux);
+  max-width: 42ch;
+  margin-inline: auto;
+}
+
+.accueil-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.accueil-note {
+  font-size: 14px;
+  color: var(--texte-doux);
+}
+
+/* ============================== JEU ===================================== */
+#ecran-jeu {
+  gap: 16px;
+}
+
+.jeu-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progression {
+  height: 10px;
+  background-color: var(--blanc);
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progression-barre {
+  height: 100%;
+  width: 0%;
+  background-color: var(--correct);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.jeu-compteurs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.jeu-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--texte);
+}
+
+.streak-icone {
+  color: var(--correct);
+}
+
+/* Carte photo + nom : occupe l'espace disponible sans provoquer de scroll. */
+.carte {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  min-height: 0; /* autorise l'image a se comprimer dans le flex */
+}
+
+.carte-photo-cadre {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--blanc);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  overflow: hidden;
+}
+
+.carte-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carte-nom {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* Feedback textuel (bonne famille en cas d'erreur). */
+.feedback {
+  min-height: 24px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.feedback.est-correct {
+  color: var(--correct);
+}
+
+.feedback.est-erreur {
+  color: var(--erreur);
+}
+
+/* Grille des boutons de familles. */
+.familles-boutons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.famille-btn {
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  min-height: var(--hauteur-bouton);
+  padding: 0 12px;
+  background-color: var(--blanc);
+  color: var(--texte);
+  border: 2px solid var(--bordure);
+  border-radius: var(--rayon);
+  cursor: pointer;
+  transition: transform 0.05s ease;
+}
+
+.famille-btn:active {
+  transform: scale(0.98);
+}
+
+/* Etats de reponse : appliques par app.js apres le tap. */
+.famille-btn.correct {
+  background-color: var(--correct);
+  border-color: var(--correct);
+  color: var(--blanc);
+}
+
+.famille-btn.erreur {
+  background-color: var(--erreur);
+  border-color: var(--erreur);
+  color: var(--blanc);
+}
+
+/* Pendant le feedback, on estompe les autres boutons non pertinents. */
+.famille-btn.attenue {
+  opacity: 0.45;
+}
+
+.famille-btn[disabled] {
+  cursor: default;
+}
+
+/* ============================== FIN ===================================== */
+#ecran-fin {
+  justify-content: center;
+}
+
+.fin-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-block: 24px;
+}
+
+.fin-titre {
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.fin-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.fin-score-valeur {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--correct);
+}
+
+.fin-score-label {
+  font-size: 15px;
+  color: var(--texte-doux);
+}
+
+.fin-bloc-titre {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texte-doux);
+  margin-bottom: 8px;
+}
+
+.fin-liste {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fin-liste li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background-color: var(--blanc);
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 16px;
+}
+
+.fin-liste .ligne-legume {
+  font-weight: 600;
+}
+
+.fin-liste .ligne-detail {
+  color: var(--texte-doux);
+  font-size: 15px;
+  text-align: right;
+}
+
+.fin-liste .pastille {
+  font-weight: 700;
+}
+.fin-liste .pastille.bon {
+  color: var(--correct);
+}
+.fin-liste .pastille.mauvais {
+  color: var(--erreur);
+}
+
+.fin-parfait {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--correct);
+}
+
+.fin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* ---- Respect des preferences de mouvement ------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ---- Ecrans larges : on garde la colonne centree et lisible ------------ */
+@media (min-width: 620px) {
+  .accueil-titre {
+    font-size: 40px;
+  }
+  .carte-nom {
+    font-size: 30px;
+  }
+}

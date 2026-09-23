@@ -1,0 +1,52 @@
+{
+  "config": {
+    "cartesParSession": 12
+  },
+  "familles": [
+    { "id": "solanacees", "nom": "Solanacées" },
+    { "id": "cucurbitacees", "nom": "Cucurbitacées" },
+    { "id": "brassicacees", "nom": "Brassicacées" },
+    { "id": "fabacees", "nom": "Fabacées" },
+    { "id": "alliacees", "nom": "Alliacées" },
+    { "id": "apiacees", "nom": "Apiacées" },
+    { "id": "asteracees", "nom": "Astéracées" },
+    { "id": "chenopodiacees", "nom": "Chénopodiacées" }
+  ],
+  "legumes": [
+    { "id": "tomate", "nom": "Tomate", "famille": "solanacees", "image": "images/tomate.jpg", "source": "https://fr.wikipedia.org/wiki/Tomate" },
+    { "id": "poivron", "nom": "Poivron", "famille": "solanacees", "image": "images/poivron.jpg", "source": "https://fr.wikipedia.org/wiki/Poivron" },
+    { "id": "aubergine", "nom": "Aubergine", "famille": "solanacees", "image": "images/aubergine.jpg", "source": "https://fr.wikipedia.org/wiki/Aubergine" },
+    { "id": "pomme-de-terre", "nom": "Pomme de terre", "famille": "solanacees", "image": "images/pomme-de-terre.jpg", "source": "https://fr.wikipedia.org/wiki/Pomme_de_terre" },
+    { "id": "piment", "nom": "Piment", "famille": "solanacees", "image": "images/piment.jpg", "source": "https://fr.wikipedia.org/wiki/Piment" },
+    { "id": "concombre", "nom": "Concombre", "famille": "cucurbitacees", "image": "images/concombre.jpg", "source": "https://fr.wikipedia.org/wiki/Concombre" },
+    { "id": "courgette", "nom": "Courgette", "famille": "cucurbitacees", "image": "images/courgette.jpg", "source": "https://fr.wikipedia.org/wiki/Courgette" },
+    { "id": "melon", "nom": "Melon", "famille": "cucurbitacees", "image": "images/melon.jpg", "source": "https://fr.wikipedia.org/wiki/Melon_(plante)" },
+    { "id": "potiron", "nom": "Potiron", "famille": "cucurbitacees", "image": "images/potiron.jpg", "source": "https://fr.wikipedia.org/wiki/Potiron" },
+    { "id": "courge-butternut", "nom": "Courge butternut", "famille": "cucurbitacees", "image": "images/courge-butternut.jpg", "source": "https://fr.wikipedia.org/wiki/Courge_musquée" },
+    { "id": "chou", "nom": "Chou", "famille": "brassicacees", "image": "images/chou.jpg", "source": "https://fr.wikipedia.org/wiki/Chou_pommé" },
+    { "id": "radis", "nom": "Radis", "famille": "brassicacees", "image": "images/radis.jpg", "source": "https://fr.wikipedia.org/wiki/Radis" },
+    { "id": "navet", "nom": "Navet", "famille": "brassicacees", "image": "images/navet.jpg", "source": "https://fr.wikipedia.org/wiki/Navet" },
+    { "id": "roquette", "nom": "Roquette", "famille": "brassicacees", "image": "images/roquette.jpg", "source": "https://fr.wikipedia.org/wiki/Roquette_(plante)" },
+    { "id": "brocoli", "nom": "Brocoli", "famille": "brassicacees", "image": "images/brocoli.jpg", "source": "https://fr.wikipedia.org/wiki/Brocoli" },
+    { "id": "chou-fleur", "nom": "Chou-fleur", "famille": "brassicacees", "image": "images/chou-fleur.jpg", "source": "https://fr.wikipedia.org/wiki/Chou-fleur" },
+    { "id": "haricot", "nom": "Haricot", "famille": "fabacees", "image": "images/haricot.jpg", "source": "https://fr.wikipedia.org/wiki/Haricot" },
+    { "id": "pois", "nom": "Pois", "famille": "fabacees", "image": "images/pois.jpg", "source": "https://fr.wikipedia.org/wiki/Pois" },
+    { "id": "feve", "nom": "Fève", "famille": "fabacees", "image": "images/feve.jpg", "source": "https://fr.wikipedia.org/wiki/Fève" },
+    { "id": "lentille", "nom": "Lentille", "famille": "fabacees", "image": "images/lentille.jpg", "source": "https://fr.wikipedia.org/wiki/Lentille_cultivée" },
+    { "id": "ail", "nom": "Ail", "famille": "alliacees", "image": "images/ail.jpg", "source": "https://fr.wikipedia.org/wiki/Ail_cultivé" },
+    { "id": "oignon", "nom": "Oignon", "famille": "alliacees", "image": "images/oignon.jpg", "source": "https://fr.wikipedia.org/wiki/Oignon" },
+    { "id": "poireau", "nom": "Poireau", "famille": "alliacees", "image": "images/poireau.jpg", "source": "https://fr.wikipedia.org/wiki/Poireau" },
+    { "id": "echalote", "nom": "Échalote", "famille": "alliacees", "image": "images/echalote.jpg", "source": "https://fr.wikipedia.org/wiki/Échalote" },
+    { "id": "carotte", "nom": "Carotte", "famille": "apiacees", "image": "images/carotte.jpg", "source": "https://fr.wikipedia.org/wiki/Carotte" },
+    { "id": "celeri", "nom": "Céleri", "famille": "apiacees", "image": "images/celeri.jpg", "source": "https://fr.wikipedia.org/wiki/Céleri" },
+    { "id": "persil", "nom": "Persil", "famille": "apiacees", "image": "images/persil.jpg", "source": "https://fr.wikipedia.org/wiki/Persil" },
+    { "id": "fenouil", "nom": "Fenouil", "famille": "apiacees", "image": "images/fenouil.jpg", "source": "https://fr.wikipedia.org/wiki/Fenouil" },
+    { "id": "laitue", "nom": "Laitue", "famille": "asteracees", "image": "images/laitue.jpg", "source": "https://fr.wikipedia.org/wiki/Laitue" },
+    { "id": "artichaut", "nom": "Artichaut", "famille": "asteracees", "image": "images/artichaut.jpg", "source": "https://fr.wikipedia.org/wiki/Artichaut" },
+    { "id": "endive", "nom": "Endive", "famille": "asteracees", "image": "images/endive.jpg", "source": "https://fr.wikipedia.org/wiki/Endive" },
+    { "id": "topinambour", "nom": "Topinambour", "famille": "asteracees", "image": "images/topinambour.jpg", "source": "https://fr.wikipedia.org/wiki/Topinambour" },
+    { "id": "betterave", "nom": "Betterave", "famille": "chenopodiacees", "image": "images/betterave.jpg", "source": "https://fr.wikipedia.org/wiki/Betterave_potagère" },
+    { "id": "epinard", "nom": "Épinard", "famille": "chenopodiacees", "image": "images/epinard.jpg", "source": "https://fr.wikipedia.org/wiki/Épinard" },
+    { "id": "blette", "nom": "Blette", "famille": "chenopodiacees", "image": "images/blette.jpg", "source": "https://fr.wikipedia.org/wiki/Bette_(plante)" }
+  ]
+}

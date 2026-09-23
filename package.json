@@ -1,0 +1,13 @@
+{
+  "name": "familles-maraichage",
+  "version": "1.0.0",
+  "description": "PWA educative pour apprendre les familles botaniques de fruits et legumes.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "fetch-images": "node scripts/fetch-images.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  }
+}
