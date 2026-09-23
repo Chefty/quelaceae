@@ -169,6 +169,10 @@ body {
 /* ============================== JEU ===================================== */
 #ecran-jeu {
   gap: 16px;
+  /* Borne l'ecran de jeu a la hauteur visible : aucune barre de scroll pendant le jeu. */
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
 }
 
 .jeu-header {
@@ -226,6 +230,8 @@ body {
 .carte-photo-cadre {
   flex: 1;
   min-height: 0;
+  /* Limite dynamique proportionnelle a la hauteur de l'ecran : evite une photo trop haute. */
+  max-height: 60dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,7 +244,8 @@ body {
 .carte-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* contain : l'image entiere reste visible, jamais rognee */
+  object-fit: contain;
   display: block;
 }
 
