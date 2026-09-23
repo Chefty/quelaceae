@@ -20,8 +20,6 @@
 
   // Nombre de boutons de familles proposes par carte (le brief demande 4 a 6).
   const NB_CHOIX = 4
-  // Delai avant l'auto-avance apres une reponse (en millisecondes).
-  const DELAI_AVANCE = 700
   // Ponderation du tirage selon la boite Leitner (boite 1 = mal su = revient souvent).
   const POIDS_BOITE = { 1: 5, 2: 2, 3: 1 }
 
@@ -39,6 +37,9 @@
 
   // Etat de la session en cours.
   let session = null
+
+  // Etat du carrousel photo de la carte en cours (feature C).
+  let carrousel = { images: [], index: 0 }
 
   // Raccourci de selection DOM.
   const $ = (sel) => document.querySelector(sel)
@@ -189,10 +190,8 @@
     $("#progression-barre").style.width = `${(session.index / total) * 100}%`
     $("#streak-valeur").textContent = String(session.streak)
 
-    // Photo + nom.
-    const img = $("#carte-photo")
-    img.src = legume.image
-    img.alt = `Photo : ${legume.nom}`
+    // Photo (carrousel 2 photos si disponible — feature C) + nom.
+    afficherPhotoCarte(legume)
     $("#carte-nom").textContent = legume.nom
 
     // Reinitialise le feedback.
@@ -245,18 +244,16 @@
       }
     })
 
-    // Feedback textuel.
+    // Annonce courte pour les lecteurs d'ecran (zone aria-live existante).
     const fb = $("#feedback")
-    if (correct) {
-      fb.textContent = "Correct"
-      fb.className = "feedback est-correct"
-    } else {
-      fb.textContent = `Non — c'est : ${familleParId[legume.famille].nom}`
-      fb.className = "feedback est-erreur"
+    if (fb) {
+      fb.textContent = correct ? "Correct" : "Incorrect"
+      fb.className = correct ? "feedback est-correct" : "feedback est-erreur"
     }
 
-    // Auto-avance.
-    window.setTimeout(avancer, DELAI_AVANCE)
+    // Modale "pourquoi" (feature A) : affiche la famille + le critere, l'avance
+    // vers la carte suivante se fait uniquement quand l'utilisateur clique OK.
+    ouvrirModalFeedback(correct, familleParId[legume.famille])
   }
 
   // Applique le resultat d'une carte a la persistance.
@@ -354,6 +351,303 @@
     allerA("ecran-fin")
   }
 
+  /* ================= 6bis. Styles injectes (modale, carrousel, fiches) === */
+
+  // Les nouveaux elements (modale, carrousel, ecran fiches) n'ont pas de regles
+  // dans style.css : on les injecte une fois au demarrage pour rester autonome
+  // tant que style.css n'est pas mis a jour a la main.
+  function injecterStyles() {
+    if ($("#styles-dynamiques")) return
+    const style = document.createElement("style")
+    style.id = "styles-dynamiques"
+    style.textContent = `
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 16px;
+      }
+      .modal-overlay[hidden] { display: none; }
+      .modal-boite {
+        background: #fff;
+        color: #1a1a1a;
+        border-radius: 12px;
+        padding: 24px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .modal-boite h3 { margin: 0 0 12px; font-size: 1.25rem; }
+      .modal-boite h3.est-correct { color: #1b8a3d; }
+      .modal-boite h3.est-erreur { color: #c0392b; }
+      .modal-boite p { margin: 0 0 20px; line-height: 1.5; }
+      .modal-boite #modal-ok {
+        display: block;
+        width: 100%;
+        min-height: 56px;
+        margin-top: 4px;
+      }
+
+      /* Le carrousel s'insere DANS .carte-photo-cadre (deja existante dans
+         index.html) : on force la photo a remplir ce cadre quel que soit le
+         CSS d'origine, et on superpose les points en bas plutot que d'ajouter
+         de la hauteur (le cadre a souvent une taille/ratio fixe). */
+      .carte-photo-carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .carte-photo-carousel img.carte-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .carte-photo-dots {
+        position: absolute;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        z-index: 2;
+      }
+      .carte-photo-dots .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+      }
+      .carte-photo-dots .dot.actif { background: #fff; border-color: #2e7d32; }
+
+      .fiches-liste { list-style: disc; padding-left: 24px; margin: 0; text-align: left; }
+      .fiches-liste li { margin-bottom: 16px; line-height: 1.5; }
+      .fiches-liste strong { display: block; margin-bottom: 2px; }
+    `
+    document.head.appendChild(style)
+  }
+
+  /* ================= 6ter. Modale feedback "pourquoi" (feature A) ======== */
+
+  // Construit la modale une seule fois et la garde cachee (attribut hidden).
+  function construireModal() {
+    if ($("#modal-feedback-overlay")) return
+
+    const overlay = document.createElement("div")
+    overlay.id = "modal-feedback-overlay"
+    overlay.className = "modal-overlay"
+    overlay.hidden = true
+    overlay.innerHTML =
+      '<div class="modal-boite" role="dialog" aria-modal="true" aria-labelledby="modal-titre">' +
+      '<h3 id="modal-titre"></h3>' +
+      '<p id="modal-critere"></p>' +
+      '<button id="modal-ok" class="btn btn-primaire" type="button">OK</button>' +
+      "</div>"
+
+    document.body.appendChild(overlay)
+    $("#modal-ok").addEventListener("click", fermerModalFeedback)
+  }
+
+  // Affiche la modale avec la famille et son critere.
+  function ouvrirModalFeedback(correct, famille) {
+    const overlay = $("#modal-feedback-overlay")
+    const titre = $("#modal-titre")
+    const critere = $("#modal-critere")
+
+    titre.textContent = correct ? `Correct — ${famille.nom}` : `Non, c'était : ${famille.nom}`
+    titre.className = correct ? "est-correct" : "est-erreur"
+    critere.textContent = famille.critere || ""
+
+    overlay.hidden = false
+    $("#modal-ok").focus()
+  }
+
+  // Ferme la modale puis avance vers la carte suivante.
+  function fermerModalFeedback() {
+    $("#modal-feedback-overlay").hidden = true
+    avancer()
+  }
+
+  /* ================= 6quater. Carrousel photo (feature C) ================ */
+
+  // Enveloppe l'img#carte-photo existante dans un conteneur "carrousel" +
+  // indicateurs (points), une seule fois. Fonctionne avec l'img deja presente
+  // dans index.html, pas besoin de modifier le HTML.
+  function construireCarrouselPhoto() {
+    const img = $("#carte-photo")
+    if (!img) return null
+    if (img.parentElement && img.parentElement.classList.contains("carte-photo-carousel")) {
+      return img.parentElement
+    }
+
+    const wrapper = document.createElement("div")
+    wrapper.className = "carte-photo-carousel"
+    img.parentElement.insertBefore(wrapper, img)
+    wrapper.appendChild(img)
+
+    const dots = document.createElement("div")
+    dots.className = "carte-photo-dots"
+    dots.id = "carte-photo-dots"
+    wrapper.appendChild(dots)
+
+    // Swipe tactile pour naviguer entre les 2 photos.
+    let debutX = null
+    wrapper.addEventListener("touchstart", (e) => {
+      debutX = e.touches[0].clientX
+    })
+    wrapper.addEventListener("touchend", (e) => {
+      if (debutX === null) return
+      const delta = e.changedTouches[0].clientX - debutX
+      if (Math.abs(delta) > 40) naviguerCarrousel(delta > 0 ? -1 : 1)
+      debutX = null
+    })
+
+    // Clic sur la photo (souris/desktop) : passe a la photo suivante.
+    img.style.cursor = "pointer"
+    img.addEventListener("click", () => naviguerCarrousel(1))
+
+    // Clic sur un point : va directement a cette photo.
+    dots.addEventListener("click", (e) => {
+      const i = Array.from(dots.children).indexOf(e.target)
+      if (i >= 0) {
+        carrousel.index = i
+        rendreCarrousel()
+      }
+    })
+
+    return wrapper
+  }
+
+  // Prepare les photos de la carte courante : la photo "champ" du legume
+  // (data.json -> legume.image) + la photo "indice de famille" mutualisee au
+  // niveau de la famille (data.json -> famille.imageAnatomie), une fois que
+  // le script fetch-images.mjs l'aura telechargee. Si l'indice n'existe pas
+  // encore, on retombe simplement sur une seule photo (pas de carrousel).
+  function afficherPhotoCarte(legume) {
+    construireCarrouselPhoto()
+
+    const famille = familleParId[legume.famille] || {}
+    const images = []
+    if (legume.image) {
+      images.push({ src: legume.image, alt: `${legume.nom} en culture, vue d'ensemble` })
+    }
+    if (famille.imageAnatomie) {
+      images.push({ src: famille.imageAnatomie, alt: `Indice de famille (${famille.nom}) : détail révélateur` })
+    }
+
+    carrousel = { images, index: 0 }
+    rendreCarrousel()
+  }
+
+  function rendreCarrousel() {
+    const img = $("#carte-photo")
+    const photo = carrousel.images[carrousel.index]
+    if (!img || !photo) return
+    img.src = photo.src
+    img.alt = photo.alt
+
+    const dots = $("#carte-photo-dots")
+    if (!dots) return
+    dots.innerHTML = ""
+    if (carrousel.images.length > 1) {
+      carrousel.images.forEach((_, i) => {
+        const dot = document.createElement("span")
+        dot.className = "dot" + (i === carrousel.index ? " actif" : "")
+        dots.appendChild(dot)
+      })
+    }
+  }
+
+  function naviguerCarrousel(direction) {
+    if (carrousel.images.length < 2) return
+    carrousel.index = (carrousel.index + direction + carrousel.images.length) % carrousel.images.length
+    rendreCarrousel()
+  }
+
+  /* ================= 6quinquies. Ecran Fiches familles (feature B) ======= */
+
+  // Cree l'ecran "fiches" (liste a puces familles + criteres) et le bouton
+  // retour, injectes une seule fois au demarrage — pas besoin de toucher
+  // index.html.
+  function construireEcranFiches() {
+    if ($("#ecran-fiches")) return
+
+    const ecranExistant = $(".ecran")
+    const conteneur = ecranExistant ? ecranExistant.parentElement : document.body
+
+    const section = document.createElement("section")
+    section.id = "ecran-fiches"
+    section.className = "ecran"
+    section.setAttribute("aria-labelledby", "titre-fiches")
+    section.innerHTML =
+      '<div class="fin-contenu">' +
+      '<h2 id="titre-fiches" class="fin-titre">Fiches familles</h2>' +
+      '<ul id="fiches-liste" class="fiches-liste"></ul>' +
+      '<div class="fin-actions">' +
+      '<button id="btn-fiches-retour" class="btn btn-lien" type="button">Retour à l\'accueil</button>' +
+      "</div>" +
+      "</div>"
+
+    conteneur.appendChild(section)
+    $("#btn-fiches-retour").addEventListener("click", retourAccueil)
+  }
+
+  // Ajoute le bouton "Fiches familles" sur l'accueil, dans le meme groupe de
+  // boutons que "Jouer" / "Reviser mes erreurs" si possible (memes classes
+  // .btn .btn-secondaire pour un rendu identique). Repli progressif +
+  // avertissement console pour diagnostiquer si les IDs attendus ne
+  // correspondent pas a ton index.html.
+  function ajouterBoutonFiches() {
+    if ($("#btn-fiches")) return
+
+    const btn = document.createElement("button")
+    btn.id = "btn-fiches"
+    btn.className = "btn btn-secondaire"
+    btn.type = "button"
+    btn.textContent = "Fiches familles"
+    btn.addEventListener("click", () => {
+      afficherFiches()
+      allerA("ecran-fiches")
+    })
+
+    const groupeActions = $(".accueil-actions")
+    const btnJouer = $("#btn-jouer")
+    const accueil = $("#ecran-accueil")
+
+    if (groupeActions) {
+      groupeActions.appendChild(btn)
+    } else if (btnJouer) {
+      btnJouer.insertAdjacentElement("afterend", btn)
+    } else if (accueil) {
+      accueil.appendChild(btn)
+      console.warn('[v0] #btn-jouer introuvable : bouton "Fiches familles" ajoute en fin d\'ecran d\'accueil.')
+    } else {
+      document.body.appendChild(btn)
+      console.warn('[v0] #ecran-accueil introuvable : bouton "Fiches familles" ajoute au body (verifie les IDs dans index.html).')
+    }
+  }
+
+  // Remplit la liste a puces : une famille par ligne, nom en gras + critere.
+  function afficherFiches() {
+    const liste = $("#fiches-liste")
+    if (!liste) return
+    liste.innerHTML = ""
+
+    const famillesTriees = [...DATA.familles].sort((a, b) => a.nom.localeCompare(b.nom, "fr"))
+    for (const famille of famillesTriees) {
+      const li = document.createElement("li")
+      const critere = famille.critere ? ` — ${famille.critere}` : ""
+      li.innerHTML = `<strong>${famille.nom}</strong>${critere}`
+      liste.appendChild(li)
+    }
+  }
+
   /* ================= 7. Navigation + branchements ======================= */
 
   // Affiche un ecran et masque les autres.
@@ -418,9 +712,14 @@
   async function init() {
     try {
       await chargerDonnees()
+      injecterStyles()
+      construireModal()
+      construireEcranFiches()
+      ajouterBoutonFiches()
       brancherBoutons()
       rafraichirAccueil()
       enregistrerSW()
+      console.log("[v0] app.js chargé — fonctionnalités A (modale), B (fiches), C (carrousel) actives.")
     } catch (err) {
       console.log("[v0] Erreur d'initialisation :", err.message)
       document.body.innerHTML =

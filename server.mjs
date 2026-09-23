@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url"
 import { dirname } from "node:path"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5001
 
 // Types MIME minimaux dont l'application a besoin.
 const TYPES = {
