@@ -278,6 +278,26 @@ body {
   gap: 10px;
 }
 
+/* Bouton "Suivant" (feature A) : ajoute apres reponse, prend toute la
+   largeur de la grille pour bien se distinguer des boutons de familles
+   desactives au-dessus. */
+.suivant-btn {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  animation: apparition 0.15s ease;
+}
+
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .famille-btn {
   font: inherit;
   font-size: 18px;
@@ -419,6 +439,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+    animation: none !important;
   }
 }
 
@@ -430,4 +451,92 @@ body {
   .carte-nom {
     font-size: 30px;
   }
+}
+
+/* ==================== FEEDBACK "POURQUOI" INLINE (feature A) ============= */
+/* Pas de boite de dialogue : le critere s'affiche juste sous le verdict,
+   l'ecran de jeu avance automatiquement (voir app.js), et un tap n'importe
+   ou sur l'ecran fait avancer tout de suite. */
+.feedback-critere {
+  min-height: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--texte-doux);
+  padding-inline: 8px;
+  line-height: 1.4;
+}
+
+/* ======================= CARROUSEL PHOTO (feature C) ===================== */
+/* La photo garde son comportement d'origine (object-fit: contain, jamais
+   rognee) : .carte-photo-carousel ne fait qu'ajouter un contexte de
+   positionnement pour superposer les points de pagination. */
+.carte-photo-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carte-photo-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.carte-photo-dots .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.carte-photo-dots .dot.actif {
+  background-color: var(--blanc);
+  border-color: var(--correct);
+}
+
+/* ======================= FICHES FAMILLES (feature B) ====================== */
+#ecran-fiches {
+  justify-content: center;
+}
+
+.fiches-intro {
+  text-align: center;
+  color: var(--texte-doux);
+  font-size: 15px;
+  margin-top: -8px;
+}
+
+.fiches-liste {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fiches-liste li {
+  background-color: var(--blanc);
+  border: 1px solid var(--bordure);
+  border-left: 4px solid var(--correct);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.fiche-nom {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.fiche-critere {
+  display: block;
+  color: var(--texte-doux);
+  font-size: 15px;
+  line-height: 1.5;
 }

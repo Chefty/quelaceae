@@ -11,7 +11,7 @@
      mise a jour chez les utilisateurs.
    ========================================================================= */
 
-const VERSION = "v1"
+const VERSION = "v3" // v3 : plus de minuteur d'avance, bouton "Suivant" explicite
 const CACHE = `familles-maraichage-${VERSION}`
 
 // Fichiers de base ("app shell") a mettre en cache des l'installation.
@@ -36,12 +36,15 @@ self.addEventListener("install", (event) => {
       // 1. Fichiers de base.
       await cache.addAll(FICHIERS_BASE)
 
-      // 2. Toutes les images des legumes, lues depuis data.json.
-      //    Ainsi, pas besoin de maintenir la liste des images ici a la main.
+      // 2. Toutes les images des legumes + les photos "indice de famille",
+      //    lues depuis data.json. Ainsi, pas besoin de maintenir la liste
+      //    des images ici a la main.
       try {
         const rep = await fetch("data.json", { cache: "no-cache" })
         const data = await rep.json()
-        const images = (data.legumes || []).map((l) => l.image)
+        const imagesLegumes = (data.legumes || []).map((l) => l.image)
+        const imagesFamilles = (data.familles || []).map((f) => f.imageAnatomie).filter(Boolean)
+        const images = [...imagesLegumes, ...imagesFamilles]
         // On met en cache une par une pour ne pas tout faire echouer si une image manque.
         await Promise.all(
           images.map((src) =>

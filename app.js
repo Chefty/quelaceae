@@ -198,6 +198,8 @@
     const fb = $("#feedback")
     fb.textContent = ""
     fb.className = "feedback"
+    const fbCritere = $("#feedback-critere")
+    if (fbCritere) fbCritere.textContent = ""
 
     // (Re)genere les boutons de familles.
     const conteneur = $("#familles-boutons")
@@ -244,16 +246,21 @@
       }
     })
 
-    // Annonce courte pour les lecteurs d'ecran (zone aria-live existante).
+    // Feedback texte (verdict + critere "pourquoi"), affiche immediatement,
+    // sans boite de dialogue ni clic obligatoire pour continuer.
+    const famille = familleParId[legume.famille]
     const fb = $("#feedback")
     if (fb) {
-      fb.textContent = correct ? "Correct" : "Incorrect"
+      fb.textContent = correct ? `Correct — ${famille.nom}` : `Non — c'était : ${famille.nom}`
       fb.className = correct ? "feedback est-correct" : "feedback est-erreur"
     }
+    const fbCritere = $("#feedback-critere")
+    if (fbCritere) fbCritere.textContent = famille.critere || ""
 
-    // Modale "pourquoi" (feature A) : affiche la famille + le critere, l'avance
-    // vers la carte suivante se fait uniquement quand l'utilisateur clique OK.
-    ouvrirModalFeedback(correct, familleParId[legume.famille])
+    // Affiche un bouton "Suivant" explicite : c'est l'utilisateur qui decide
+    // quand il a fini de lire, pas un minuteur (feature A, version controlee
+    // par l'utilisateur).
+    afficherBoutonSuivant()
   }
 
   // Applique le resultat d'une carte a la persistance.
@@ -351,130 +358,41 @@
     allerA("ecran-fin")
   }
 
-  /* ================= 6bis. Styles injectes (modale, carrousel, fiches) === */
+  /* ================= 6bis. Feedback "pourquoi" non-bloquant (feature A) == */
 
-  // Les nouveaux elements (modale, carrousel, ecran fiches) n'ont pas de regles
-  // dans style.css : on les injecte une fois au demarrage pour rester autonome
-  // tant que style.css n'est pas mis a jour a la main.
-  function injecterStyles() {
-    if ($("#styles-dynamiques")) return
-    const style = document.createElement("style")
-    style.id = "styles-dynamiques"
-    style.textContent = `
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 16px;
-      }
-      .modal-overlay[hidden] { display: none; }
-      .modal-boite {
-        background: #fff;
-        color: #1a1a1a;
-        border-radius: 12px;
-        padding: 24px;
-        max-width: 420px;
-        width: 100%;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-      }
-      .modal-boite h3 { margin: 0 0 12px; font-size: 1.25rem; }
-      .modal-boite h3.est-correct { color: #1b8a3d; }
-      .modal-boite h3.est-erreur { color: #c0392b; }
-      .modal-boite p { margin: 0 0 20px; line-height: 1.5; }
-      .modal-boite #modal-ok {
-        display: block;
-        width: 100%;
-        min-height: 56px;
-        margin-top: 4px;
-      }
-
-      /* Le carrousel s'insere DANS .carte-photo-cadre (deja existante dans
-         index.html) : on force la photo a remplir ce cadre quel que soit le
-         CSS d'origine, et on superpose les points en bas plutot que d'ajouter
-         de la hauteur (le cadre a souvent une taille/ratio fixe). */
-      .carte-photo-carousel {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-      .carte-photo-carousel img.carte-photo {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-      .carte-photo-dots {
-        position: absolute;
-        left: 50%;
-        bottom: 10px;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 8px;
-        z-index: 2;
-      }
-      .carte-photo-dots .dot {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.55);
-        border: 1px solid rgba(0, 0, 0, 0.25);
-        cursor: pointer;
-      }
-      .carte-photo-dots .dot.actif { background: #fff; border-color: #2e7d32; }
-
-      .fiches-liste { list-style: disc; padding-left: 24px; margin: 0; text-align: left; }
-      .fiches-liste li { margin-bottom: 16px; line-height: 1.5; }
-      .fiches-liste strong { display: block; margin-bottom: 2px; }
-    `
-    document.head.appendChild(style)
+  // Ajoute une 2e ligne de feedback (le critere) juste apres #feedback,
+  // une seule fois. Pas de boite de dialogue : le critere s'affiche en place,
+  // sans bloquer l'ecran.
+  function construireZoneCritere() {
+    if ($("#feedback-critere")) return
+    const feedback = $("#feedback")
+    if (!feedback) return
+    const p = document.createElement("p")
+    p.id = "feedback-critere"
+    p.className = "feedback-critere"
+    feedback.insertAdjacentElement("afterend", p)
   }
 
-  /* ================= 6ter. Modale feedback "pourquoi" (feature A) ======== */
+  // Affiche un bouton "Suivant" explicite dans la grille des boutons de
+  // familles (a la place, une fois les reponses desactivees). C'est
+  // l'utilisateur qui decide quand avancer, quel que soit son temps de
+  // lecture — pas de minuteur.
+  function afficherBoutonSuivant() {
+    const conteneur = $("#familles-boutons")
+    if (!conteneur) return
 
-  // Construit la modale une seule fois et la garde cachee (attribut hidden).
-  function construireModal() {
-    if ($("#modal-feedback-overlay")) return
+    const btn = document.createElement("button")
+    btn.type = "button"
+    btn.id = "btn-suivant"
+    btn.className = "btn btn-primaire suivant-btn"
+    btn.textContent = "Suivant →"
+    btn.addEventListener("click", avancer)
 
-    const overlay = document.createElement("div")
-    overlay.id = "modal-feedback-overlay"
-    overlay.className = "modal-overlay"
-    overlay.hidden = true
-    overlay.innerHTML =
-      '<div class="modal-boite" role="dialog" aria-modal="true" aria-labelledby="modal-titre">' +
-      '<h3 id="modal-titre"></h3>' +
-      '<p id="modal-critere"></p>' +
-      '<button id="modal-ok" class="btn btn-primaire" type="button">OK</button>' +
-      "</div>"
-
-    document.body.appendChild(overlay)
-    $("#modal-ok").addEventListener("click", fermerModalFeedback)
+    conteneur.appendChild(btn)
+    btn.focus()
   }
 
-  // Affiche la modale avec la famille et son critere.
-  function ouvrirModalFeedback(correct, famille) {
-    const overlay = $("#modal-feedback-overlay")
-    const titre = $("#modal-titre")
-    const critere = $("#modal-critere")
-
-    titre.textContent = correct ? `Correct — ${famille.nom}` : `Non, c'était : ${famille.nom}`
-    titre.className = correct ? "est-correct" : "est-erreur"
-    critere.textContent = famille.critere || ""
-
-    overlay.hidden = false
-    $("#modal-ok").focus()
-  }
-
-  // Ferme la modale puis avance vers la carte suivante.
-  function fermerModalFeedback() {
-    $("#modal-feedback-overlay").hidden = true
-    avancer()
-  }
-
-  /* ================= 6quater. Carrousel photo (feature C) ================ */
+  /* ================= 6ter. Carrousel photo (feature C) ================ */
 
   // Enveloppe l'img#carte-photo existante dans un conteneur "carrousel" +
   // indicateurs (points), une seule fois. Fonctionne avec l'img deja presente
@@ -570,7 +488,7 @@
     rendreCarrousel()
   }
 
-  /* ================= 6quinquies. Ecran Fiches familles (feature B) ======= */
+  /* ================= 6quater. Ecran Fiches familles (feature B) ========== */
 
   // Cree l'ecran "fiches" (liste a puces familles + criteres) et le bouton
   // retour, injectes une seule fois au demarrage — pas besoin de toucher
@@ -588,6 +506,7 @@
     section.innerHTML =
       '<div class="fin-contenu">' +
       '<h2 id="titre-fiches" class="fin-titre">Fiches familles</h2>' +
+      '<p class="fiches-intro">Le repère visuel qui trahit la famille, pour chaque famille botanique.</p>' +
       '<ul id="fiches-liste" class="fiches-liste"></ul>' +
       '<div class="fin-actions">' +
       '<button id="btn-fiches-retour" class="btn btn-lien" type="button">Retour à l\'accueil</button>' +
@@ -642,8 +561,19 @@
     const famillesTriees = [...DATA.familles].sort((a, b) => a.nom.localeCompare(b.nom, "fr"))
     for (const famille of famillesTriees) {
       const li = document.createElement("li")
-      const critere = famille.critere ? ` — ${famille.critere}` : ""
-      li.innerHTML = `<strong>${famille.nom}</strong>${critere}`
+
+      const nom = document.createElement("strong")
+      nom.className = "fiche-nom"
+      nom.textContent = famille.nom
+      li.appendChild(nom)
+
+      if (famille.critere) {
+        const critere = document.createElement("span")
+        critere.className = "fiche-critere"
+        critere.textContent = famille.critere
+        li.appendChild(critere)
+      }
+
       liste.appendChild(li)
     }
   }
@@ -712,14 +642,13 @@
   async function init() {
     try {
       await chargerDonnees()
-      injecterStyles()
-      construireModal()
+      construireZoneCritere()
       construireEcranFiches()
       ajouterBoutonFiches()
       brancherBoutons()
       rafraichirAccueil()
       enregistrerSW()
-      console.log("[v0] app.js chargé — fonctionnalités A (modale), B (fiches), C (carrousel) actives.")
+      console.log("[v0] app.js chargé — fonctionnalités A (feedback inline), B (fiches), C (carrousel) actives.")
     } catch (err) {
       console.log("[v0] Erreur d'initialisation :", err.message)
       document.body.innerHTML =
