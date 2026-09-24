@@ -129,7 +129,7 @@
     { "id": "consoude", "nom": "Consoude", "famille": "boraginacees", "image": "images/consoude.jpg", "source": "https://fr.wikipedia.org/wiki/Consoude_officinale" },
     { "id": "okra", "nom": "Okra", "famille": "malvacees", "image": "images/okra.jpg", "source": "https://fr.wikipedia.org/wiki/Okra" },
     { "id": "mauve", "nom": "Mauve (feuille/fleur)", "famille": "malvacees", "image": "images/mauve.jpg", "source": "https://fr.wikipedia.org/wiki/Mauve_sylvestre" },
-    { "id": "pourgier", "nom": "Pourpier maraîcher", "famille": "portulacacees", "image": "images/pourgier.jpg", "source": "https://fr.wikipedia.org/wiki/Pourpier_maraîcher" },
+    { "id": "pourpier", "nom": "Pourpier maraîcher", "famille": "portulacacees", "image": "images/pourpier.jpg", "source": "https://fr.wikipedia.org/wiki/Pourpier_maraîcher" },
     { "id": "capucine", "nom": "Capucine (fleurs comestibles)", "famille": "tropaeolacees", "image": "images/capucine.jpg", "source": "https://fr.wikipedia.org/wiki/Grande_capucine" },
     { "id": "mache", "nom": "Mâche", "famille": "caprifoliacees", "image": "images/mache.jpg", "source": "https://fr.wikipedia.org/wiki/Mâche_(plante)" },
     { "id": "raisin", "nom": "Raisin de table", "famille": "vitacees", "image": "images/raisin.jpg", "source": "https://fr.wikipedia.org/wiki/Raisin" },
