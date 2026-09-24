@@ -1,7 +1,14 @@
+> **Projet éducatif à but non lucratif.**
+> Cette application est développée bénévolement dans un cadre de formation maraîchère (BPREA, CFPPA) pour
+> l'apprentissage de la botanique appliquée. Le code est libre (licence MIT)
+> et les images utilisées le sont dans un strict but pédagogique, chaque
+> auteur pouvant demander le retrait ou la correction de l'attribution de
+> ses visuels en ouvrant une *issue*.
+
 # Familles Maraîchage
 
 PWA éducative en français pour apprendre les **familles botaniques** des légumes, aromatiques, céréales et fruits.
-Pensée pour la formation maraîchère (BPREA, CFPPA…) : on ouvre l'URL, on joue en 2 secondes,
+Pensée pour la formation maraîchère (BPREA, CFPPA…) : on ouvre l'URL, on joue rapidement,
 sans compte, et ça **fonctionne hors ligne** après le premier chargement.
 
 - 107 végétaux, 23 familles botaniques (légumes, aromatiques/médicinales, céréales & pseudo-céréales, fruits)
