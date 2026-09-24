@@ -540,3 +540,30 @@ body {
   font-size: 15px;
   line-height: 1.5;
 }
+
+.accueil-footer {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--texte-doux);
+}
+
+.lien-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texte);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.lien-github:visited {
+  color: var(--texte);
+}
+
+.accueil-licence {
+  font-size: 12px;
+}
